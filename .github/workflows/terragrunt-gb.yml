@@ -1,0 +1,80 @@
+name: 'Green/Blue Switch'
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-target:
+          description: 'What Stack should be deployed'
+          required: true
+          type: choice
+          options:
+          - blue
+          - green
+
+env:
+  AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: "eu-central-1"
+  TARGET_ENV: ${{ inputs.deploy-target }}
+  CURRENT_ENV: "blue"
+
+jobs:
+  switch:
+    name: 'Blue/Green Switch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+        
+      - name: Setup Terragrunt
+        uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: 0.39.0
+      
+      - name: Interact with Terragrunt
+        run: terragrunt --version 
+
+      - name: 'Define Target and Current'
+        if: ${{ inputs.deploy-target == 'blue' }} # have assumed current is blue - if chose to deploy blue current must be green
+        run: |
+          export CURRENT_ENV=green
+        shell: bash
+
+      - name: 'Terragrunt Init'
+        run: |
+          cd ./terraform
+          terragrunt init
+
+      - name: 'Stand up Target' # Start task on target, set target desired = 2
+        run: |
+          cd ./terraform
+          terragrunt plan -var mode=${{ env.CURRENT_ENV }} -var tasks=both 
+          echo "yes" | terragrunt apply -var mode=${{ env.CURRENT_ENV }} -var tasks=both 
+
+      - name: 'Poll TG ALB until Healthy'
+        # Have included a way of polling for status code - havent written logic for waiting & retrying until helathy
+        # Instead for the purposes of demo simply wait 30 seoconds and app should be up.
+        # n.b. Would also need logic for a time out to abandon job and raise error if it takes too long
+        run: |
+          cd ./terraform
+          curl -k -s -o /dev/null -w "%{http_code}" $(terragrunt output -raw alb_nginx_url)
+          sleep 30
+
+        shell: bash
+
+      - name: 'Terragrunt Plan Switch Traffic' # change ALB routing from Current -> Target
+        run: |
+          cd ./terraform
+          terragrunt plan -var mode=${{ env.TARGET_ENV }} -var tasks=both 
+          echo "yes" | terragrunt apply -var mode=${{ env.TARGET_ENV }} -var tasks=both
+
+      - name: 'Poll Service check Healthy'
+        # Same as above - don't know the ALB URL here. Service should come up healthy immediately then we can shutdown Blue
+        #  If not switch routing back to Blue and raise error
+        run: sleep 1s # should be curl -k https://[ALB]
+        shell: bash
+
+      - name: 'Terragrunt Plan stop Old Env' # Stop Old tasks (cost saving)
+        run: |
+          cd ./terraform
+          terragrunt plan -var mode=${{ env.TARGET_ENV }} -var tasks=${{ env.TARGET_ENV }}
+          echo "yes" | terragrunt apply -var mode=${{ env.TARGET_ENV }} -var tasks=${{ env.TARGET_ENV }}
