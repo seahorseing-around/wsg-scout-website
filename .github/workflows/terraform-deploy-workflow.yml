@@ -21,23 +21,17 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      
-      - name: Interact with Terraform
-        run: |
-          cd ./terraform
-          terraform version
-
       - name: 'terraform Init'
         run: |
           cd ./terraform
           terraform init --backend-config key=${GITHUB_REF##*/}/terraform.tfstate
 
-      - name: 'Stand up Target' # Start task on target, set target desired = 2
+      - name: 'Plan'
         run: |
           cd ./terraform
           terraform plan --var-file=${GITHUB_REF##*/}-environment.tfvars
          
-      - name: 'terraform Plan Apply' # change ALB routing from Current -> Target
+      - name: 'terraform Plan & Apply'
         run: |
           cd ./terraform
           terraform plan --var-file=${GITHUB_REF##*/}-environment.tfvars

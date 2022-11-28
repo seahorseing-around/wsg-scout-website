@@ -15,6 +15,9 @@ Static Website for WSG Scouts
 
 - Document with AWS Account Details: https://docs.google.com/document/d/18WbEa5Qumo8f6hDoJRbk1vz-V55H1fqNEk1sAgX4L3E/edit?usp=sharing
 
+# Resources
+- National Brand https://scoutsbrand.org.uk/catalogue/category/digital/logos/scout-logo
+
 
 # Commands
 - terraform init --backend-config profile=scouts --backend-config key=develop/terraform.tfstate --var-file=develop-environment.tfvars
