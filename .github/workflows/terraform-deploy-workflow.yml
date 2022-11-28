@@ -30,18 +30,18 @@ jobs:
       - name: 'terraform Init'
         run: |
           cd ./terraform
-          terraform init --backend-config key=${{branch}}/terraform.tfstate
+          terraform init --backend-config key=${GITHUB_REF##*/}/terraform.tfstate
 
       - name: 'Stand up Target' # Start task on target, set target desired = 2
         run: |
           cd ./terraform
-          terraform plan --var-file=${{branch}}-environment.tfvars
+          terraform plan --var-file=${GITHUB_REF##*/}-environment.tfvars
          
       - name: 'terraform Plan Apply' # change ALB routing from Current -> Target
         run: |
           cd ./terraform
-          terraform plan --var-file=${{branch}}-environment.tfvars
-          terraform apply --auto-approve --var-file=${{branch}}-environment.tfvars
+          terraform plan --var-file=${GITHUB_REF##*/}-environment.tfvars
+          terraform apply --auto-approve --var-file=${GITHUB_REF##*/}-environment.tfvars
 
       - name: 'Poll Service check Healthy'
         # Same as above - don't know the ALB URL here. Service should come up healthy immediately then we can shutdown Blue
