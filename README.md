@@ -19,3 +19,16 @@ Static Website for WSG Scouts
 # Commands
 - terraform init --backend-config profile=scouts --backend-config key=develop/terraform.tfstate --var-file=develop-environment.tfvars
 - terraform plan --var-file=develop-environment.tfvars  
+
+
+# About Github actions
+https://github.com/seahorseing-around/wsg-scout-website/actions
+
+# Userguide
+
+- To update the website start by pulling the repo locally
+- To make content changed you should edit index.html - or associated .html files.
+- Images can be added under images, and referenced from the html
+- You can see html edits locally by opening  index.html in a browser
+- If you push code to the 'develop' branch it will automatically deploy to the test url https://westsidescouts-test.click
+- If you push code to the 'main' branch it will automatically deploy to the official url https://westsidescouts.org
