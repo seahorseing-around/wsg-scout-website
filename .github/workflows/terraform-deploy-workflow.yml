@@ -1,6 +1,5 @@
 name: 'Deploy Site'
 on:
-  on:
   push:
     branches: [ "develop", "main"]
   pull_request:

@@ -13,6 +13,7 @@ resource "aws_s3_bucket_acl" "acl" {
   acl    = "public-read"
 }
 
+# So that all files in the bucket are encryted at rest
 resource "aws_s3_bucket_server_side_encryption_configuration" "encrypt" {
   bucket = aws_s3_bucket.bucky.bucket
 
@@ -68,9 +69,5 @@ resource "aws_s3_object" "site_files" {
   source = "../site-contents/${each.value}"
   # etag makes the file update when it changes; see https://stackoverflow.com/questions/56107258/terraform-upload-file-to-s3-on-every-apply
   etag   = filemd5("../site-contents/${each.value}")
-  content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.value), null)
-}
-
-locals {
-  mime_types = jsondecode(file("./mime.json"))
+  content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.value), null) # Sets the mime type based on the mime.json lookup file
 }
