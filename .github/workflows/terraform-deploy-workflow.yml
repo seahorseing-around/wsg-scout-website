@@ -1,4 +1,4 @@
-name: 'Deploy Site'
+name: Deploy Site
 on:
   push:
     branches: [ "develop", "main"]
@@ -10,7 +10,7 @@ env:
 
 jobs:
   switch:
-    name: 'Deploy Site'
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
