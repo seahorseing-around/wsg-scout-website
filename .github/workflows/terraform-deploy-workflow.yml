@@ -15,11 +15,11 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout
+      #- name: 'Checkout'
+        #uses: actions/checkout
         
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+     # - name: Setup Terraform
+       # uses: hashicorp/setup-terraform@v2
 
       
       - name: Interact with Terraform
