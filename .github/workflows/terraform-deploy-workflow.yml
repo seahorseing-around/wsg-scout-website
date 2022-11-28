@@ -1,0 +1,49 @@
+name: 'Deploy Site'
+on:
+  on:
+  push:
+    branches: [ "develop", "main"]
+  pull_request:
+
+env:
+  AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  switch:
+    name: 'Blue/Green Switch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      
+      - name: Interact with Terraform
+        run: |
+          cd ./terraform
+          terraform version
+
+      - name: 'terraform Init'
+        run: |
+          cd ./terraform
+          terraform init --backend-config key=${{branch}}/terraform.tfstate
+
+      - name: 'Stand up Target' # Start task on target, set target desired = 2
+        run: |
+          cd ./terraform
+          terraform plan --var-file=${{branch}}-environment.tfvars
+         
+      - name: 'terraform Plan Apply' # change ALB routing from Current -> Target
+        run: |
+          cd ./terraform
+          terraform plan --var-file=${{branch}}-environment.tfvars
+          terraform apply --auto-approve --var-file=${{branch}}-environment.tfvars
+
+      - name: 'Poll Service check Healthy'
+        # Same as above - don't know the ALB URL here. Service should come up healthy immediately then we can shutdown Blue
+        #  If not switch routing back to Blue and raise error
+        run: sleep 1s # should be curl -k https://[ALB]
+        shell: bash
