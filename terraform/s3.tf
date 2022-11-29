@@ -1,6 +1,6 @@
 # S3 bucket for website.
 resource "aws_s3_bucket" "bucky" {
-  bucket = "${var.bucket_name}"
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_policy" "policy" {
@@ -19,7 +19,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encrypt" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "AES256"
+      sse_algorithm = "AES256"
     }
   }
 }
@@ -64,10 +64,10 @@ resource "aws_s3_bucket_website_configuration" "web_bucket" {
 # Uploads all the site files to the bucket
 resource "aws_s3_object" "site_files" {
   for_each = fileset("../site-contents", "**")
-  bucket = aws_s3_bucket.bucky.id
-  key    = each.value
-  source = "../site-contents/${each.value}"
+  bucket   = aws_s3_bucket.bucky.id
+  key      = each.value
+  source   = "../site-contents/${each.value}"
   # etag makes the file update when it changes; see https://stackoverflow.com/questions/56107258/terraform-upload-file-to-s3-on-every-apply
-  etag   = filemd5("../site-contents/${each.value}")
+  # etag   = filemd5("../site-contents/${each.value}")
   content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.value), null) # Sets the mime type based on the mime.json lookup file
 }
