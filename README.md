@@ -44,17 +44,15 @@ See https://github.com/seahorseing-around/wsg-scout-website/actions
 - When you've made your changes push the code to the *develop branch* to test it
 - It it tests ok, merge to code to main to dpeloy the live site
 
-
 ## Tips
 - Visual Studio Code is a great IDE - and plugins for Terraform and HTML help!
-
 
 # TODO
 - These Static site templates come with a lot of duplication - will look into Javascrpt solns
 - Join page
 - Section info pages
 - Choose a template
-
+- Port prod Domain and run in there.
 
 # Deployment Architecture
 ![Arch Diagram](static-site.svg)
