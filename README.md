@@ -10,6 +10,10 @@ If you're a member of WSG and want to contribute please send a collaborator requ
 - Google Document with AWS Account Details: https://docs.google.com/document/d/18WbEa5Qumo8f6hDoJRbk1vz-V55H1fqNEk1sAgX4L3E/edit?usp=sharing
 - Guide followed for instructions https://www.alexhyett.com/terraform-s3-static-website-hosting/
   - Note: some elements out of date
+- Test/Debug URL's
+  - Develop https://westsidescouts-test.click/
+    - Develop S3 https://wsg-website-dev.s3.eu-west-2.amazonaws.com/index.html
+  - Main https://westsidescouts.org
 
 # Resources
 - National Brand https://scoutsbrand.org.uk/catalogue/category/digital/logos/scout-logo
